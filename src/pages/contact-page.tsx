@@ -14,6 +14,15 @@ const ContactUsPage = () => {
     console.log(formData);
   };
 
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
   return (
     <div className="bg-gray-50 w-full overflow-x-hidden">
       {/* Hero Section */}
@@ -160,6 +169,9 @@ const ContactUsPage = () => {
                       </label>
                       <input
                         type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
                         required
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         placeholder="John Doe"
@@ -171,6 +183,9 @@ const ContactUsPage = () => {
                       </label>
                       <input
                         type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
                         required
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         placeholder="john@example.com"
@@ -183,6 +198,9 @@ const ContactUsPage = () => {
                     </label>
                     <input
                       type="text"
+                      name="subject"
+                      value={formData.subject}
+                      onChange={handleChange}
                       required
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       placeholder="How can we help?"
@@ -193,6 +211,9 @@ const ContactUsPage = () => {
                       Message
                     </label>
                     <textarea
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
                       required
                       rows={6}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"

@@ -51,6 +51,14 @@ const ProfilePage = () => {
     postalCode: "60000",
   });
 
+  const handleProfileUpdate = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setProfile((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
   const handleSaveProfile = () => {
     toast.success("Profile updated successfully!");
     setIsEditing(false);

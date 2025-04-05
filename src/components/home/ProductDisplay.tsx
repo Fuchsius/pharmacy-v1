@@ -8,66 +8,6 @@ import { PRODUCT_DATA } from "@/data/productdata.data";
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Sample product data
-const products = [
-  {
-    id: 1,
-    name: "RESPIREFAST",
-    image: "/assets/products/01.png",
-    description:
-      "Glucosamine, Methyl sulfonyl methane, Chondroitin sulphate, Collagen Peptide, Hyaluronic acid",
-  },
-  {
-    id: 2,
-    name: "RESPIREFAST",
-    image: "/assets/products/01.png",
-    description:
-      "Glucosamine, Methyl sulfonyl methane, Chondroitin sulphate, Collagen Peptide, Hyaluronic acid",
-  },
-  {
-    id: 3,
-    name: "RESPIREFAST",
-    image: "/assets/products/01.png",
-    description:
-      "Glucosamine, Methyl sulfonyl methane, Chondroitin sulphate, Collagen Peptide, Hyaluronic acid",
-  },
-  {
-    id: 4,
-    name: "RESPIREFAST",
-    image: "/assets/products/01.png",
-    description:
-      "Glucosamine, Methyl sulfonyl methane, Chondroitin sulphate, Collagen Peptide, Hyaluronic acid",
-  },
-  {
-    id: 5,
-    name: "RESPIREFAST",
-    image: "/assets/products/01.png",
-    description:
-      "Glucosamine, Methyl sulfonyl methane, Chondroitin sulphate, Collagen Peptide, Hyaluronic acid",
-  },
-  {
-    id: 6,
-    name: "RESPIREFAST",
-    image: "/assets/products/01.png",
-    description:
-      "Glucosamine, Methyl sulfonyl methane, Chondroitin sulphate, Collagen Peptide, Hyaluronic acid",
-  },
-  {
-    id: 7,
-    name: "RESPIREFAST",
-    image: "/assets/products/01.png",
-    description:
-      "Glucosamine, Methyl sulfonyl methane, Chondroitin sulphate, Collagen Peptide, Hyaluronic acid",
-  },
-  {
-    id: 8,
-    name: "RESPIREFAST",
-    image: "/assets/products/01.png",
-    description:
-      "Glucosamine, Methyl sulfonyl methane, Chondroitin sulphate, Collagen Peptide, Hyaluronic acid",
-  },
-];
-
 const ProductDisplay = () => {
   useGSAP(() => {
     gsap.from(".product-card", {
@@ -104,7 +44,6 @@ const ProductDisplay = () => {
               price={product.price}
               currency={product.currency}
               discount={product.discount}
-              rating={product.rating}
               inStock={product.inStock}
               badges={product.badges}
             />

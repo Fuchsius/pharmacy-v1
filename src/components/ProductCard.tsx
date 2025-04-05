@@ -8,7 +8,6 @@ type ProductCardProps = {
   price: number;
   currency?: string;
   discount?: number; // discount percentage
-  rating?: number; // out of 5
   inStock?: boolean;
   badges?: string[];
 };
@@ -21,7 +20,6 @@ const ProductCard = ({
   price,
   currency = "LKR",
   discount = 0,
-  rating = 4.5,
   inStock = true,
   badges = [],
 }: ProductCardProps) => {

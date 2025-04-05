@@ -1,21 +1,5 @@
 import FAQ from "@/components/home/FAQ";
 
-const teamMembers = [
-  {
-    id: 1,
-    name: "Dr. John Doe",
-    role: "Chief Medical Officer",
-    image: "/assets/images/team/member1.jpg",
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    role: "Head Pharmacist",
-    image: "/assets/images/team/member2.jpg",
-  },
-  // Add more team members
-];
-
 const AboutPage = () => {
   return (
     <div className="bg-gray-50">
