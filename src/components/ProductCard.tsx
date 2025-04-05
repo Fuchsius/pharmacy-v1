@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router";
 
 type ProductCardProps = {
   imageUrl: string;
@@ -168,9 +169,11 @@ const ProductCard = ({
         </div>
 
         {/* View Product Button */}
-        <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-md font-medium transition-colors mb-2">
-          VIEW PRODUCT
-        </button>
+        <Link to={`/products/${name.toLowerCase().replace(/\s+/g, "-")}`}>
+          <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-md font-medium transition-colors mb-2">
+            VIEW PRODUCT
+          </button>
+        </Link>
 
         {/* Add to Cart Button */}
         <button
