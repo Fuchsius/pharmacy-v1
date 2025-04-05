@@ -1,6 +1,11 @@
 import FAQ from "@/components/home/FAQ";
+import { useEffect } from "react";
 
 const AboutPage = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div className="bg-gray-50">
       {/* Hero Section */}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 
 type CartItem = {
@@ -27,6 +27,10 @@ const initialCartItems: CartItem[] = [
 ];
 
 const CartPage = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState<CartItem[]>(initialCartItems);
 

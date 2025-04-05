@@ -1,8 +1,13 @@
 import Categories from "@/components/home/Categories";
 import ProductCard from "@/components/ProductCard";
 import { PRODUCT_DATA } from "@/data/productdata.data";
+import { useEffect } from "react";
 
 const ProductsPage = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div className=" w-full overflow-x-hidden">
       <section className="bg-myblue overflow-hidden rounded-b-[150px] lg:rounded-b-[10000px] px-4">
@@ -49,7 +54,6 @@ const ProductsPage = () => {
                 price={product.price}
                 currency={product.currency}
                 discount={product.discount}
-                rating={product.rating}
                 inStock={product.inStock}
                 badges={product.badges}
               />

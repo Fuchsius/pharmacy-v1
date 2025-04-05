@@ -1,9 +1,14 @@
 // src/components/layout/Header.tsx
-import { useState } from "react";
-import { Link } from "react-router";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    setIsOpen(false); // Close the mobile menu when navigating
+  }, [navigate]);
 
   return (
     <header className="bg-myblue text-white py-4 sticky top-0 z-50">
@@ -46,7 +51,7 @@ const Header = () => {
             <input
               type="text"
               placeholder="Search products..."
-              className="bg-gray-50 rounded-full py-2 px-4 text-sm w-[200px] focus:outline-none focus:ring-2 focus:ring-blue-100 border border-gray-200 placeholder:text-gray-500"
+              className="bg-gray-50 text-black rounded-full py-2 px-4 text-sm w-[200px] focus:outline-none focus:ring-2 focus:ring-blue-100 border border-gray-200 placeholder:text-gray-500"
             />
             <button className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-600">
               <svg
@@ -152,7 +157,7 @@ const Header = () => {
               <input
                 type="text"
                 placeholder="Search products..."
-                className="w-full bg-gray-50 rounded-full py-2 px-4 text-sm border border-gray-200 placeholder:text-gray-500"
+                className="w-full bg-gray-50 rounded-full py-2 px-4 text-sm border border-gray-200 placeholder:text-gray-500 text-black"
               />
             </div>
           </div>

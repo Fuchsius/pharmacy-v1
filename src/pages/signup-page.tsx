@@ -1,7 +1,11 @@
 import { Link } from "react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const SignupPage = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",

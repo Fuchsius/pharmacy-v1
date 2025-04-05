@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const ContactUsPage = () => {
   const [formData, setFormData] = useState({
@@ -7,6 +7,10 @@ const ContactUsPage = () => {
     subject: "",
     message: "",
   });
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

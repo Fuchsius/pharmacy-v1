@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import toast from "react-hot-toast";
 
@@ -37,6 +37,10 @@ const orderHistory = [
 ];
 
 const ProfilePage = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const [activeTab, setActiveTab] = useState<"profile" | "orders" | "security">(
     "profile"
   );

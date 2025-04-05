@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import toast from "react-hot-toast";
 
@@ -56,6 +56,10 @@ const branches = [
 ];
 
 const CheckoutPage = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const [formData, setFormData] = useState<CheckoutFormData>(initialFormData);
   const [stage, setStage] = useState<1 | 2 | 3>(1);
   const [isLoading, setIsLoading] = useState(false);
