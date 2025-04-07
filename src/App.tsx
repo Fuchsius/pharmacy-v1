@@ -17,6 +17,11 @@ import ProfilePage from "@/pages/profile-page";
 import SingleProductView from "@/pages/single-product-view"; // Import SingleProductView
 import AdminLayout from "@/components/layout/AdminLayout";
 import Dashboard from "@/admin-pages/dashboard";
+import ProductsManagement from "@/admin-pages/products-page";
+import OrderManagement from "@/admin-pages/order-page";
+import CustomerManagement from "@/admin-pages/customers-page";
+import Settings from "@/admin-pages/setting";
+import Categories from "./admin-pages/categories";
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
@@ -64,6 +69,11 @@ const App = () => {
 
         <Route path="/dashboard" element={<AdminLayout />}>
           <Route index element={<Dashboard />} />
+          <Route path="products" element={<ProductsManagement />} />
+          <Route path="orders" element={<OrderManagement />} />
+          <Route path="customers" element={<CustomerManagement />} />
+          <Route path="settings" element={<Settings />} />
+          <Route path="categories" element={<Categories />} />
         </Route>
 
         <Route

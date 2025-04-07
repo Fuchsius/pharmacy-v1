@@ -179,7 +179,7 @@ const SingleProductView = () => {
               <div className="py-6">
                 {activeTab === "description" && (
                   <div className="prose max-w-none">
-                    <p className="text-gray-600">{product.ingredients}</p>
+                    <p className="text-gray-600">{product.description}</p>
                   </div>
                 )}
                 {activeTab === "details" && (

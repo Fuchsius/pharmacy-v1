@@ -5,7 +5,7 @@ type ProductCardProps = {
   imageUrl: string;
   name: string;
   brand: string;
-  ingredients: string;
+  description: string;
   price: number;
   currency?: string;
   discount?: number; // discount percentage
@@ -17,7 +17,7 @@ const ProductCard = ({
   imageUrl,
   name,
   brand,
-  ingredients,
+  description,
   price,
   currency = "LKR",
   discount = 0,
@@ -100,7 +100,7 @@ const ProductCard = ({
         <p className="text-gray-600 text-sm mb-2">{brand}</p>
 
         {/* Ingredients */}
-        <p className="text-gray-700 text-xs mb-3 italic">({ingredients})</p>
+        <p className="text-gray-700 text-xs mb-3 italic">({description})</p>
 
         {/* Rating */}
         {/* <div className="flex items-center mb-2">

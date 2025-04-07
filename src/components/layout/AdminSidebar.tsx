@@ -43,7 +43,7 @@ const menuItems = [
         />
       </svg>
     ),
-    path: "/admin/products",
+    path: "/dashboard/products",
   },
   {
     title: "Orders",
@@ -62,7 +62,26 @@ const menuItems = [
         />
       </svg>
     ),
-    path: "/admin/orders",
+    path: "/dashboard/orders",
+  },
+  {
+    path: "/dashboard/categories",
+    title: "Categories",
+    icon: (
+      <svg
+        className="w-6 h-6"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+        />
+      </svg>
+    ),
   },
   {
     title: "Customers",
@@ -81,7 +100,7 @@ const menuItems = [
         />
       </svg>
     ),
-    path: "/admin/customers",
+    path: "/dashboard/customers",
   },
   {
     title: "Settings",
@@ -106,7 +125,7 @@ const menuItems = [
         />
       </svg>
     ),
-    path: "/admin/settings",
+    path: "/dashboard/settings",
   },
 ];
 
@@ -192,7 +211,7 @@ const AdminSidebar = ({
           }`}
         >
           <Link
-            to="/admin/profile"
+            to="/settings"
             className="flex items-center gap-3 text-gray-600 hover:text-blue-600"
           >
             <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">

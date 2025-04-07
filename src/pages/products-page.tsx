@@ -50,11 +50,11 @@ const ProductsPage = () => {
                 imageUrl={product.imageUrl}
                 name={product.name}
                 brand={product.brand}
-                ingredients={product.ingredients}
+                description={product.description}
                 price={product.price}
                 currency={product.currency}
                 discount={product.discount}
-                inStock={product.inStock}
+                inStock={0 < product.stockCount}
                 badges={product.badges}
               />
             ))}
