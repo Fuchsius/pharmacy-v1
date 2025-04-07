@@ -22,10 +22,22 @@ import OrderManagement from "@/admin-pages/order-page";
 import CustomerManagement from "@/admin-pages/customers-page";
 import Settings from "@/admin-pages/setting";
 import Categories from "./admin-pages/categories";
+import { useEffect } from "react";
+import { useAuthStore } from "./store/authStore";
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
 const App = () => {
+  const { fetchUser, logout } = useAuthStore();
+
+  useEffect(() => {
+    try {
+      fetchUser();
+    } catch (error) {
+      logout();
+    }
+  }, []);
+
   return (
     <>
       <Toaster

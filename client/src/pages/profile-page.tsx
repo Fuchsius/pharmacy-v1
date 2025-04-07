@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import toast from "react-hot-toast";
+import { useAuthStore } from "@/store/authStore";
 
 type UserProfile = {
   firstName: string;
@@ -37,6 +38,7 @@ const orderHistory = [
 ];
 
 const ProfilePage = () => {
+  const { user } = useAuthStore();
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -45,15 +47,26 @@ const ProfilePage = () => {
     "profile"
   );
   const [isEditing, setIsEditing] = useState(false);
-  const [profile, setProfile] = useState<UserProfile>({
-    firstName: "John",
-    lastName: "Doe",
-    email: "john@example.com",
-    phone: "077 110 4103",
-    address: "123 Main St",
-    city: "Kurunegala",
-    postalCode: "60000",
+  const [profile, setProfile] = useState({
+    firstName: user?.firstName || "",
+    lastName: user?.lastName || "",
+    email: user?.email || "",
+    phone: user?.phone || "",
+    username: user?.username || "",
   });
+
+  // Update profile state when user data changes
+  useEffect(() => {
+    if (user) {
+      setProfile({
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        phone: user.phone || "",
+        username: user.username || "",
+      });
+    }
+  }, [user]);
 
   const handleProfileUpdate = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -63,9 +76,15 @@ const ProfilePage = () => {
     }));
   };
 
-  const handleSaveProfile = () => {
-    toast.success("Profile updated successfully!");
-    setIsEditing(false);
+  const handleSaveProfile = async () => {
+    try {
+      // Add API call to update profile here
+      console.log("Updated profile:", profile);
+      toast.success("Profile updated successfully!");
+      setIsEditing(false);
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || "Failed to update profile");
+    }
   };
 
   const handlePasswordChange = (e: React.FormEvent) => {
@@ -206,8 +225,71 @@ const ProfilePage = () => {
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-6">
-                    {/* Profile form fields */}
-                    {/* ...existing profile form fields... */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        First Name
+                      </label>
+                      <input
+                        type="text"
+                        name="firstName"
+                        value={profile.firstName}
+                        onChange={handleProfileUpdate}
+                        disabled={!isEditing}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Last Name
+                      </label>
+                      <input
+                        type="text"
+                        name="lastName"
+                        value={profile.lastName}
+                        onChange={handleProfileUpdate}
+                        disabled={!isEditing}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        name="email"
+                        value={profile.email}
+                        onChange={handleProfileUpdate}
+                        disabled={true}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Username
+                      </label>
+                      <input
+                        type="text"
+                        name="username"
+                        value={profile.username}
+                        onChange={handleProfileUpdate}
+                        disabled={!isEditing}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Phone
+                      </label>
+                      <input
+                        type="tel"
+                        name="phone"
+                        value={profile.phone}
+                        onChange={handleProfileUpdate}
+                        disabled={!isEditing}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50"
+                      />
+                    </div>
                   </div>
 
                   {isEditing && (

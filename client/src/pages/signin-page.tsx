@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router";
+import { useAuthStore } from "@/store/authStore";
+import toast from "react-hot-toast";
 
 const SigninPage = () => {
   useEffect(() => {
@@ -6,16 +9,19 @@ const SigninPage = () => {
   }, []);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const navigate = useNavigate();
+  const { login, isLoading } = useAuthStore();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      console.log("Sign in attempt with:", { email, password });
-    }, 1500);
+    try {
+      await login({ email, password });
+      toast.success("Successfully signed in!");
+      navigate("/");
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || "Failed to sign in");
+    }
   };
 
   return (
@@ -178,12 +184,12 @@ const SigninPage = () => {
 
           <div className="text-center text-sm text-gray-600 mt-6 flex items-center justify-center">
             Don't have an account?{" "}
-            <a
-              href="/signup"
+            <Link
+              to="/signup"
               className="font-medium text-blue-600 hover:text-blue-500"
             >
               Sign up now
-            </a>
+            </Link>
           </div>
         </div>
       </div>

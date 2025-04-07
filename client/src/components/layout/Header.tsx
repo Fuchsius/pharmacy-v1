@@ -1,25 +1,32 @@
 // src/components/layout/Header.tsx
+import { useAuthStore } from "@/store/authStore";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+  const { user, logout } = useAuthStore();
 
   useEffect(() => {
     setIsOpen(false); // Close the mobile menu when navigating
   }, [navigate]);
+
+  const handleLogout = () => {
+    logout();
+    navigate("/signin");
+  };
 
   return (
     <header className="bg-myblue text-white py-4 sticky top-0 z-50">
       <div className="my-container flex justify-between items-center">
         <Link to="/" className="flex items-center space-x-3">
           <img src="/logo.svg" alt="Pharmix Logo" className="h-16 w-16" />
-          <span className="font-semibold text-3xl md:hidden lg:block">PNM</span>
+          <span className="font-semibold text-3xl hidden lg:block">PNM</span>
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-8">
+        <nav className="hidden lg:flex items-center space-x-8">
           <Link
             to="/"
             className="hover:text-sky-100 font-semibold transition-colors duration-300"
@@ -46,7 +53,7 @@ const Header = () => {
           </Link>
         </nav>
 
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden lg:flex items-center gap-6">
           <div className="relative">
             <input
               type="text"
@@ -73,7 +80,7 @@ const Header = () => {
 
           <div className="flex items-center gap-4">
             <Link
-              to="/signin"
+              to={user?.email ? "/profile" : "/signin"}
               className="flex items-center gap-2 transition-colors duration-300"
             >
               <svg
@@ -90,7 +97,7 @@ const Header = () => {
                   d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                 />
               </svg>
-              <span>Sign In</span>
+              <span>{user?.email ? "Profile" : "Sign In"}</span>
             </Link>
 
             <Link
@@ -112,12 +119,34 @@ const Header = () => {
                 />
               </svg>
             </Link>
+
+            {user?.email && (
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 transition-colors duration-300 text-white hover:text-sky-100"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  />
+                </svg>
+                {/* <span>Logout</span> */}
+              </button>
+            )}
           </div>
         </div>
 
         {/* Mobile menu button */}
         <button
-          className="md:hidden text-white"
+          className="lg:hidden text-white"
           onClick={() => setIsOpen(!isOpen)}
         >
           <svg
@@ -139,7 +168,7 @@ const Header = () => {
 
       {/* Mobile Navigation */}
       {isOpen && (
-        <nav className="md:hidden bg-myblue border-t mt-4">
+        <nav className="lg:hidden bg-myblue border-t mt-4">
           <div className="my-container py-4 flex flex-col space-y-4">
             <Link to="/" className="transition-colors duration-300">
               Home

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Outlet, useNavigate } from "react-router";
+import { useAuthStore } from "@/store/authStore";
 import AdminSidebar from "./AdminSidebar";
 import NotificationsPanel from "./NotificationsPanel";
 
@@ -8,9 +9,10 @@ const AdminLayout = () => {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const navigate = useNavigate();
+  const { logout } = useAuthStore();
 
   const handleLogout = () => {
-    // Add your logout logic here
+    logout();
     navigate("/signin");
   };
 
