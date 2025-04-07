@@ -1,6 +1,6 @@
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db" 
+  provider = "mysql" // Use "postgresql" for PostgreSQL
+  url      = env("DATABASE_URL") // Use environment variable for production
 }
 
 generator client {
