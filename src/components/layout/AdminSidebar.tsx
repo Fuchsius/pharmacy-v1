@@ -211,7 +211,7 @@ const AdminSidebar = ({
           }`}
         >
           <Link
-            to="/settings"
+            to="/dashboard/settings"
             className="flex items-center gap-3 text-gray-600 hover:text-blue-600"
           >
             <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
