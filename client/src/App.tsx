@@ -82,15 +82,15 @@ const App = () => {
           <Route path="profile" element={<ProfilePage />} />
         </Route>
 
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <AdminLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<Dashboard />} />
+        <Route path="/dashboard" element={<AdminLayout />}>
+          <Route
+            index
+            element={
+              // <ProtectedRoute allowedRoles={["admin"]}>
+              <Dashboard />
+              // {/* </ProtectedRoute> */}
+            }
+          />
           <Route path="products" element={<ProductsManagement />} />
           <Route path="orders" element={<OrderManagement />} />
           <Route path="customers" element={<CustomerManagement />} />

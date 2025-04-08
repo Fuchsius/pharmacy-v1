@@ -14,12 +14,15 @@ export const ProtectedRoute = ({
   const { user, token } = useAuthStore();
   const location = useLocation();
 
+  // Not logged in - redirect to login
   if (!token || !user) {
     return <Navigate to="/signin" state={{ from: location }} replace />;
   }
 
+  // Check role access
   if (allowedRoles && !allowedRoles.includes(user.roleRelation.role)) {
-    return <Navigate to="/unauthorized" replace />;
+    // Save attempted location for potential redirect back after proper login
+    return <Navigate to="/unauthorized" state={{ from: location }} replace />;
   }
 
   return <>{children}</>;
