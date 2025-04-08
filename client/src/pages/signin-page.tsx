@@ -24,7 +24,11 @@ const SigninPage = () => {
     try {
       await login({ email, password });
       toast.success("Successfully signed in!");
-      navigate("/");
+      if (user?.roleRelation.role === "admin") {
+        navigate("/dashboard");
+      } else {
+        navigate("/");
+      }
     } catch (error: any) {
       toast.error(error.response?.data?.error || "Failed to sign in");
     }
