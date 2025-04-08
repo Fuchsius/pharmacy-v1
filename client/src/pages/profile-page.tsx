@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import toast from "react-hot-toast";
 import { useAuthStore } from "@/store/authStore";
+import apiClient from "@/services/api";
 
 type UserProfile = {
   firstName: string;
@@ -41,6 +42,7 @@ const ProfilePage = () => {
   const { user } = useAuthStore();
   useEffect(() => {
     window.scrollTo(0, 0);
+    // console.log("User data:", user);
   }, []);
 
   const [activeTab, setActiveTab] = useState<"profile" | "orders" | "security">(
@@ -78,8 +80,21 @@ const ProfilePage = () => {
 
   const handleSaveProfile = async () => {
     try {
-      // Add API call to update profile here
-      console.log("Updated profile:", profile);
+      const response = await apiClient.put<any>("/users-v2/profile", {
+        firstName: profile.firstName,
+        lastName: profile.lastName,
+        username: profile.username,
+        phone: profile.phone,
+      });
+
+      setProfile({
+        ...profile,
+        ...response,
+      });
+
+      // Update the user in auth store
+      useAuthStore.getState().fetchUser();
+
       toast.success("Profile updated successfully!");
       setIsEditing(false);
     } catch (error: any) {
@@ -87,9 +102,28 @@ const ProfilePage = () => {
     }
   };
 
-  const handlePasswordChange = (e: React.FormEvent) => {
+  const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Password updated successfully!");
+    const form = e.target as HTMLFormElement;
+    const currentPassword = form.currentPassword.value;
+    const newPassword = form.newPassword.value;
+    const confirmPassword = form.confirmPassword.value;
+
+    if (newPassword !== confirmPassword) {
+      return toast.error("New passwords don't match");
+    }
+
+    try {
+      await apiClient.postJSON("/users/password", {
+        currentPassword,
+        newPassword,
+      });
+
+      toast.success("Password updated successfully!");
+      form.reset();
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || "Failed to update password");
+    }
   };
 
   return (

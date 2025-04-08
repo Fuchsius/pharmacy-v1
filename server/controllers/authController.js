@@ -9,7 +9,7 @@ const JWT_EXPIRES_IN = "24h";
 // User Registration
 const registerUser = async (req, res) => {
   try {
-    const { firstName, lastName, email, password, username } = req.body;
+    const { firstName, lastName, email, password, username, phone } = req.body;
 
     if (!firstName || !lastName || !email || !password) {
       return res.status(400).json({ error: "All fields are required" });
@@ -51,6 +51,7 @@ const registerUser = async (req, res) => {
         fullName: `${firstName} ${lastName}`,
         email,
         username,
+        phone,
         password: hashedPassword,
         role: customerRole.id,
         status: "active",

@@ -4,14 +4,20 @@ import { useAuthStore } from "@/store/authStore";
 import toast from "react-hot-toast";
 
 const SigninPage = () => {
+  const { login, isLoading, user } = useAuthStore();
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [user]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
-  const { login, isLoading } = useAuthStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

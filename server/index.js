@@ -26,7 +26,7 @@ const authRouter = require("./routes/authRouter");
 // Routes - Middleware
 app.use("/auth", authRouter);
 app.use("/users", authenticate, userRouter);
-app.use("/users-v2", authenticate, userRouter2);
+app.use("/users-v2", userRouter2);
 app.use("/address", authenticate, addressRouter);
 app.use("/categories", authenticate, categoriesRouter);
 app.use("/products", authenticate, productsRouter);

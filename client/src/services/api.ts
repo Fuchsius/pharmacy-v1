@@ -34,6 +34,11 @@ const apiClient = {
     const response = await api.post<T>(url, data);
     return response.data;
   },
+
+  put: async <T>(url: string, data: any) => {
+    const response = await api.put<T>(url, data);
+    return response.data;
+  },
 };
 
 export default apiClient;

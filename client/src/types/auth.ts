@@ -31,3 +31,8 @@ export interface AuthResponse {
   token: string;
   message: string;
 }
+
+export interface PasswordUpdateData {
+  currentPassword: string;
+  newPassword: string;
+}

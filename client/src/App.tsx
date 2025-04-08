@@ -24,6 +24,8 @@ import Settings from "@/admin-pages/setting";
 import Categories from "./admin-pages/categories";
 import { useEffect } from "react";
 import { useAuthStore } from "./store/authStore";
+import { ProtectedRoute } from "./components/ProtectedRoute";
+import UnauthorizedPage from "@/pages/unauthorized-page"; // Import UnauthorizedPage
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
@@ -63,6 +65,7 @@ const App = () => {
         }}
       />
       <Routes>
+        <Route path="unauthorized" element={<UnauthorizedPage />} />
         <Route element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="about" element={<AboutPage />} />
@@ -79,7 +82,14 @@ const App = () => {
           <Route path="profile" element={<ProfilePage />} />
         </Route>
 
-        <Route path="/dashboard" element={<AdminLayout />}>
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <AdminLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route index element={<Dashboard />} />
           <Route path="products" element={<ProductsManagement />} />
           <Route path="orders" element={<OrderManagement />} />

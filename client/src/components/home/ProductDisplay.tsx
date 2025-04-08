@@ -10,17 +10,17 @@ gsap.registerPlugin(ScrollTrigger);
 
 const ProductDisplay = () => {
   useGSAP(() => {
-    gsap.from(".product-card", {
-      opacity: 0,
-      y: 50,
-      stagger: 0.1,
-      duration: 0.8,
-      ease: "power2.out",
-      scrollTrigger: {
-        trigger: ".products-section",
-        start: "top 80%",
-      },
-    });
+    // gsap.from(".product-card", {
+    //   opacity: 0,
+    //   y: 50,
+    //   stagger: 0.1,
+    //   duration: 0.8,
+    //   ease: "power2.out",
+    //   scrollTrigger: {
+    //     trigger: ".products-section",
+    //     start: "top 80%",
+    //   },
+    // });
   }, []);
 
   return (
@@ -44,7 +44,7 @@ const ProductDisplay = () => {
               price={product.price}
               currency={product.currency}
               discount={product.discount}
-              inStock={product.inStock}
+              inStock={0 < product.stockCount}
               badges={product.badges}
             />
           ))}
