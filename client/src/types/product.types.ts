@@ -13,4 +13,6 @@ export type Product = {
   badges: string[];
 };
 
-export type ProductFormData = Omit<Product, "id" | "rating">;
+export type ProductFormData = Omit<Product, "id" | "rating"> & {
+  imageUrl?: string;
+};
