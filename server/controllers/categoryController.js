@@ -82,60 +82,49 @@ const updateCategory = async (req, res) => {
   const { id } = req.params;
   const { name, description } = req.body;
 
+  // Only set new image path if file is uploaded
   const imagePath = req.file
     ? `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`
     : null;
 
   if (!id) {
-    if (imagePath) {
-      fs.unlinkSync(imagePath);
-    }
     return res.status(400).json({ error: "Category ID is required." });
   }
   if (isNaN(id)) {
-    if (imagePath) {
-      fs.unlinkSync(imagePath);
-    }
     return res.status(400).json({ error: "Category ID must be a number." });
   }
 
   try {
     const category = await prisma.category.findUnique({
-      where: {
-        id: parseInt(id),
-      },
+      where: { id: parseInt(id) },
     });
 
     if (!category) {
-      if (imagePath) {
-        fs.unlinkSync(imagePath);
-      }
       return res.status(404).json({ error: "Category not found." });
     }
 
-    // If the image is updated, delete the old image
-    if (category.image && imagePath) {
-      if (fs.existsSync(category.image)) {
-        fs.unlinkSync(category.image);
+    // Only handle image changes if a new image is uploaded
+    if (imagePath && category.image) {
+      const oldImageFilename = category.image.split("/uploads/").pop();
+      const oldImagePath = path.join("uploads", oldImageFilename);
+      if (fs.existsSync(oldImagePath)) {
+        fs.unlinkSync(oldImagePath);
       }
     }
 
-    // Update the category
-    // If no new image is provided, keep the old image
+    // Update category with new data, keeping old image if no new one provided
     const updatedCategory = await prisma.category.update({
       where: { id: parseInt(id) },
       data: {
         name,
         description,
-        image: imagePath,
+        ...(imagePath ? { image: imagePath } : {}), // Only update image if new one provided
       },
     });
 
     res.status(200).json(updatedCategory);
   } catch (error) {
-    if (imagePath) {
-      fs.unlinkSync(imagePath);
-    }
+    console.error("Error updating category:", error);
     res.status(500).json({ error: "Failed to update category." });
   }
 };

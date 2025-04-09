@@ -38,13 +38,15 @@ const Categories = () => {
     e.preventDefault();
     const formDataToSend = new FormData();
     formDataToSend.append("name", formData.name);
+
     if (selectedFile) {
+      // Only append image if a new file is selected
       formDataToSend.append("image", selectedFile);
     }
 
     try {
       if (editingCategory) {
-        await apiClient.put(
+        const response = await apiClient.putFormData(
           `/categories/update/${editingCategory.id}`,
           formDataToSend
         );
