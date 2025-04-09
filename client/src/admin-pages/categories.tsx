@@ -1,64 +1,100 @@
-import { useState } from "react";
+import apiClient from "@/services/api";
+import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
 interface Category {
-  id: string;
+  id: number;
   name: string;
-  image: string;
+  description: string;
+  image: string | null;
 }
 
-const initialCategories: Category[] = [
-  {
-    id: "1",
-    name: "Prescription Drugs",
-    image: "/images/categories/prescription.jpg",
-  },
-  {
-    id: "2",
-    name: "Over-the-Counter",
-    image: "/images/categories/otc.jpg",
-  },
-];
-
 const Categories = () => {
-  const [categories, setCategories] = useState<Category[]>(initialCategories);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [formData, setFormData] = useState({ name: "", image: "" });
+  const [formData, setFormData] = useState({
+    name: "",
+    image: "",
+    description: "", // we'll keep this for now since it's used in other places
+  });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (editingCategory) {
-      setCategories(
-        categories.map((cat) =>
-          cat.id === editingCategory.id ? { ...cat, ...formData } : cat
-        )
-      );
-      toast.success("Category updated successfully!");
-    } else {
-      setCategories([
-        ...categories,
-        { id: Date.now().toString(), ...formData },
-      ]);
-      toast.success("Category added successfully!");
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await apiClient.get<Category[]>("/categories");
+      setCategories(response);
+    } catch (error: any) {
+      toast.error("Failed to fetch categories");
     }
-    setIsModalOpen(false);
-    setEditingCategory(null);
-    setFormData({ name: "", image: "" });
-    setPreviewUrl("");
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const formDataToSend = new FormData();
+    formDataToSend.append("name", formData.name);
+    if (selectedFile) {
+      formDataToSend.append("image", selectedFile);
+    }
+
+    try {
+      if (editingCategory) {
+        await apiClient.put(
+          `/categories/update/${editingCategory.id}`,
+          formDataToSend
+        );
+        toast.success("Category updated successfully!");
+      } else {
+        await apiClient.postFormData("/categories", formDataToSend);
+        toast.success("Category added successfully!");
+      }
+      fetchCategories();
+      setIsModalOpen(false);
+      setEditingCategory(null);
+      setFormData({ name: "", image: "", description: "" });
+      setPreviewUrl("");
+      setSelectedFile(null);
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || "Failed to save category");
+    }
   };
 
   const handleEdit = (category: Category) => {
     setEditingCategory(category);
-    setFormData({ name: category.name, image: category.image });
+    setFormData({
+      name: category.name,
+      image: category.image || "",
+      description: category.description || "",
+    });
+    if (category.image) {
+      setPreviewUrl(category.image);
+    }
     setIsModalOpen(true);
   };
 
-  const handleDelete = (id: string) => {
-    setCategories(categories.filter((cat) => cat.id !== id));
-    toast.success("Category deleted successfully!");
+  const handleDelete = async (id: number) => {
+    try {
+      await apiClient.delete(`/categories/delete/${id}`);
+      toast.success("Category deleted successfully!");
+      fetchCategories();
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || "Failed to delete category");
+    }
+  };
+
+  const handleImageDelete = async (categoryId: number) => {
+    try {
+      await apiClient.delete(`/categories/${categoryId}/image`);
+      toast.success("Image deleted successfully!");
+      fetchCategories();
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || "Failed to delete image");
+    }
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,7 +104,6 @@ const Categories = () => {
       const reader = new FileReader();
       reader.onload = () => {
         setPreviewUrl(reader.result as string);
-        setFormData((prev) => ({ ...prev, image: reader.result as string }));
       };
       reader.readAsDataURL(file);
     }
@@ -94,7 +129,7 @@ const Categories = () => {
             className="bg-white rounded-lg shadow-sm p-4 space-y-4"
           >
             <img
-              src={category.image}
+              src={category.image || "/placeholder-image.jpg"}
               alt={category.name}
               className="w-full h-48 object-cover rounded-lg"
             />
@@ -122,7 +157,7 @@ const Categories = () => {
       {/* Updated Modal */}
       {isModalOpen && (
         <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl p-6 w-full max-w-md">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-gray-900">
                 {editingCategory ? "Edit Category" : "Add New Category"}
@@ -131,7 +166,7 @@ const Categories = () => {
                 onClick={() => {
                   setIsModalOpen(false);
                   setEditingCategory(null);
-                  setFormData({ name: "", image: "" });
+                  setFormData({ name: "", image: "", description: "" });
                   setPreviewUrl("");
                 }}
                 className="text-gray-500 hover:text-gray-700"
@@ -174,10 +209,11 @@ const Categories = () => {
                 </label>
                 <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg">
                   <div className="space-y-1 text-center">
-                    {previewUrl ? (
+                    {previewUrl ||
+                    (editingCategory && editingCategory.image) ? (
                       <div className="relative">
                         <img
-                          src={previewUrl}
+                          src={previewUrl || (editingCategory?.image as string)}
                           alt="Preview"
                           className="mx-auto h-32 w-auto rounded-lg"
                         />
@@ -246,7 +282,7 @@ const Categories = () => {
                   onClick={() => {
                     setIsModalOpen(false);
                     setEditingCategory(null);
-                    setFormData({ name: "", image: "" });
+                    setFormData({ name: "", image: "", description: "" });
                     setPreviewUrl("");
                   }}
                   className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"

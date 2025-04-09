@@ -24,7 +24,7 @@ import Settings from "@/admin-pages/setting";
 import Categories from "./admin-pages/categories";
 import { useEffect } from "react";
 import { useAuthStore } from "./store/authStore";
-import { ProtectedRoute } from "./components/ProtectedRoute";
+// import { ProtectedRoute } from "./components/ProtectedRoute";
 import UnauthorizedPage from "@/pages/unauthorized-page"; // Import UnauthorizedPage
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);

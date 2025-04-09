@@ -12,7 +12,7 @@ app.use(cors());
 app.use("/uploads", express.static("uploads"));
 
 // Authentication Middleware
-const { authenticate } = require("./middleware/authMiddleware");
+// const { authenticate } = require("./middleware/authMiddleware");
 
 // Routers
 const userRouter = require("./routes/userRouter");
@@ -25,12 +25,12 @@ const authRouter = require("./routes/authRouter");
 
 // Routes - Middleware
 app.use("/auth", authRouter);
-app.use("/users", authenticate, userRouter);
+app.use("/users", userRouter);
 app.use("/users-v2", userRouter2);
-app.use("/address", authenticate, addressRouter);
-app.use("/categories", authenticate, categoriesRouter);
-app.use("/products", authenticate, productsRouter);
-app.use("/contact", authenticate, contactRouter);
+app.use("/address", addressRouter);
+app.use("/categories", categoriesRouter);
+app.use("/products", productsRouter);
+app.use("/contact", contactRouter);
 
 // Example health check route
 app.get("/", (req, res) => {
