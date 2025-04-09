@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router";
 import { useAuthStore } from "@/store/authStore";
 import AdminSidebar from "./AdminSidebar";
@@ -9,12 +9,24 @@ const AdminLayout = () => {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const navigate = useNavigate();
-  const { logout } = useAuthStore();
+  const { logout, user } = useAuthStore();
 
   const handleLogout = () => {
     logout();
     navigate("/signin");
   };
+
+  useEffect(() => {
+    if (user) {
+      if (user.roleRelation.role !== "admin") {
+        navigate("/unauthorized");
+      }
+    }
+  }, [user]);
+
+  if (!user) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="flex min-h-screen bg-gray-50">
