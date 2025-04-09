@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import { Product, ProductFormData } from "@/types/product.types";
 import { PRODUCT_DATA } from "@/data/productdata.data";
 import ProductForm from "@/components/admin/ProductForm";
+import apiClient from "@/services/api";
 
 const ProductsManagement = () => {
   const [products, setProducts] = useState<Product[]>(PRODUCT_DATA);
@@ -28,6 +29,8 @@ const ProductsManagement = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewImage, setPreviewImage] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isImageUploadStep, setIsImageUploadStep] = useState(false);
+  const [currentProductId, setCurrentProductId] = useState<number | null>(null);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -83,12 +86,10 @@ const ProductsManagement = () => {
     setIsModalOpen(true);
   };
 
-  const handleSubmit = async (formData: ProductFormData) => {
-    if (!formData.imageUrl) {
-      toast.error("Please upload a product image");
-      return;
-    }
-
+  const handleSubmit = async (
+    formData: ProductFormData,
+    isImageStep = false
+  ) => {
     setIsSubmitting(true);
     try {
       if (editingProduct) {
@@ -98,19 +99,55 @@ const ProductsManagement = () => {
           )
         );
         toast.success("Product updated successfully");
+      } else if (isImageStep && currentProductId) {
+        const base64Data = formData.imageUrl?.split(",")[1];
+        if (!base64Data) return;
+
+        const byteCharacters = atob(base64Data);
+        const byteNumbers = new Array(byteCharacters.length);
+
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+
+        const byteArray = new Uint8Array(byteNumbers);
+        const imageFile = new File([byteArray], "product-image.jpg", {
+          type: "image/jpeg",
+        });
+
+        const formDataObj = new FormData();
+        formDataObj.append("image", imageFile);
+
+        await apiClient.postFormData(
+          `/products/image/${currentProductId}`,
+          formDataObj
+        );
+
+        toast.success("Product created successfully");
+        setIsModalOpen(false);
+        setIsImageUploadStep(false);
+        setCurrentProductId(null);
       } else {
-        const newProduct: Product = {
-          ...formData,
-          id: Math.max(...products.map((p) => p.id)) + 1,
-          rating: 0,
+        const productData = {
+          name: formData.name,
+          description: formData.description,
+          price: Number(formData.price),
+          stockCount: Number(formData.stockCount),
+          categoryId: Number(formData.categoryId),
+          brand: formData.brand,
+          discount: Number(formData.discount) || 0,
         };
-        setProducts([...products, newProduct]);
-        toast.success("Product added successfully");
+
+        const newProduct = await apiClient.post<Product>(
+          "/products",
+          productData
+        );
+        setCurrentProductId(newProduct.id);
+        setIsImageUploadStep(true);
+        toast.success("Product details saved. Please add an image.");
       }
-      setIsModalOpen(false);
-      setEditingProduct(null);
-    } catch (error) {
-      toast.error("Something went wrong");
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || "Failed to process request");
     } finally {
       setIsSubmitting(false);
     }

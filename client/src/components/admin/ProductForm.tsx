@@ -84,6 +84,34 @@ const ProductForm = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!isImageUploadStep) {
+      // Validate first step
+      if (
+        !formData.name ||
+        !formData.description ||
+        !formData.price ||
+        !formData.stockCount ||
+        !formData.categoryId
+      ) {
+        toast.error("Please fill in all required fields");
+        return;
+      }
+
+      if (formData.price <= 0 || formData.stockCount < 0) {
+        toast.error(
+          "Price must be greater than 0 and stock count cannot be negative"
+        );
+        return;
+      }
+    } else {
+      // Validate image step
+      if (!formData.imageUrl) {
+        toast.error("Please upload an image");
+        return;
+      }
+    }
+
     onSubmit(formData, isImageUploadStep);
   };
 
