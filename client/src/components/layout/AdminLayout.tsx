@@ -25,7 +25,11 @@ const AdminLayout = () => {
   }, [user]);
 
   if (!user) {
-    return <div>Loading...</div>;
+    return (
+      <div className=" w-full min-h-dvh flex items-center justify-center text-5xl text-myblue font-bold">
+        Loading...
+      </div>
+    );
   }
 
   return (

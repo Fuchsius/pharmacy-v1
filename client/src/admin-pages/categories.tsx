@@ -16,37 +16,45 @@ const Categories = () => {
   const [formData, setFormData] = useState({
     name: "",
     image: "",
-    description: "", // we'll keep this for now since it's used in other places
+    description: "",
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
+
+  // Add new loading states
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState<number | null>(null);
 
   useEffect(() => {
     fetchCategories();
   }, []);
 
   const fetchCategories = async () => {
+    setIsLoading(true);
     try {
       const response = await apiClient.get<Category[]>("/categories");
       setCategories(response);
     } catch (error: any) {
       toast.error("Failed to fetch categories");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSaving(true);
     const formDataToSend = new FormData();
     formDataToSend.append("name", formData.name);
 
     if (selectedFile) {
-      // Only append image if a new file is selected
       formDataToSend.append("image", selectedFile);
     }
 
     try {
       if (editingCategory) {
-        const response = await apiClient.putFormData(
+        await apiClient.putFormData(
           `/categories/update/${editingCategory.id}`,
           formDataToSend
         );
@@ -63,6 +71,8 @@ const Categories = () => {
       setSelectedFile(null);
     } catch (error: any) {
       toast.error(error.response?.data?.error || "Failed to save category");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -80,12 +90,15 @@ const Categories = () => {
   };
 
   const handleDelete = async (id: number) => {
+    setIsDeleting(id);
     try {
       await apiClient.delete(`/categories/delete/${id}`);
       toast.success("Category deleted successfully!");
       fetchCategories();
     } catch (error: any) {
       toast.error(error.response?.data?.error || "Failed to delete category");
+    } finally {
+      setIsDeleting(null);
     }
   };
 
@@ -125,35 +138,51 @@ const Categories = () => {
 
       {/* Categories Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {categories.map((category) => (
-          <div
-            key={category.id}
-            className="bg-white rounded-lg shadow-sm p-4 space-y-4"
-          >
-            <img
-              src={category.image || "/placeholder-image.jpg"}
-              alt={category.name}
-              className="w-full h-48 object-cover rounded-lg"
-            />
-            <div className="flex justify-between items-center">
-              <h3 className="font-semibold">{category.name}</h3>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => handleEdit(category)}
-                  className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(category.id)}
-                  className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
-                >
-                  Delete
-                </button>
+        {isLoading ? (
+          <div className="col-span-full flex justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          </div>
+        ) : categories.length === 0 ? (
+          <div className="col-span-full text-center py-8 text-gray-500">
+            No categories found
+          </div>
+        ) : (
+          categories.map((category) => (
+            <div
+              key={category.id}
+              className="bg-white rounded-lg shadow-sm p-4 space-y-4"
+            >
+              <img
+                src={category.image || "/placeholder-image.jpg"}
+                alt={category.name}
+                className="w-full h-48 object-cover rounded-lg"
+              />
+              <div className="flex justify-between items-center">
+                <h3 className="font-semibold">{category.name}</h3>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleEdit(category)}
+                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg disabled:opacity-50"
+                    disabled={isDeleting === category.id}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(category.id)}
+                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg disabled:opacity-50"
+                    disabled={isDeleting === category.id}
+                  >
+                    {isDeleting === category.id ? (
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600"></div>
+                    ) : (
+                      "Delete"
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
       {/* Updated Modal */}
@@ -293,9 +322,19 @@ const Categories = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  disabled={isSaving}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
                 >
-                  {editingCategory ? "Update Category" : "Add Category"}
+                  {isSaving ? (
+                    <span className="flex items-center gap-2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      Saving...
+                    </span>
+                  ) : editingCategory ? (
+                    "Update Category"
+                  ) : (
+                    "Add Category"
+                  )}
                 </button>
               </div>
             </form>
