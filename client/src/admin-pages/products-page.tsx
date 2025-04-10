@@ -43,10 +43,28 @@ const ProductsManagement = () => {
     setCurrentPage(page);
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
-      setProducts(products.filter((p) => p.id !== id));
-      toast.success("Product deleted successfully");
+      try {
+        // Get product details first to get image URL
+        const product = await apiClient.get<Product>(`/products-v2/${id}`);
+
+        // Delete the product
+        await apiClient.delete(`/products-v2/${id}`);
+
+        // If product had an image, delete it too
+        if (product.productImages?.[0]?.imageUrl) {
+          const filename = product.productImages[0].imageUrl.split("/").pop();
+          await apiClient.delete("/images/delete", {
+            imageUrl: filename,
+          });
+        }
+
+        await fetchProducts();
+        toast.success("Product deleted successfully");
+      } catch (error: any) {
+        toast.error(error.response?.data?.error || "Failed to delete product");
+      }
     }
   };
 

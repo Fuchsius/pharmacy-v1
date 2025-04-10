@@ -92,12 +92,11 @@ const ProductForm = ({
 
     setIsDeletingImage(true);
     try {
-      const imageUrl = formData.imageUrl;
-      // Extract filename from imageUrl
-      const filename = imageUrl.split("/uploads/").pop();
+      // Extract filename from imageUrl to match server expectations
+      // const filename = formData.imageUrl.split("/").pop();
 
       await apiClient.delete("/images/delete", {
-        imageUrl: filename,
+        imageUrl: formData.imageUrl,
       });
 
       setPreviewImage("");
