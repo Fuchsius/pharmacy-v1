@@ -4,30 +4,57 @@ import { useAuthStore } from "@/store/authStore";
 import AdminSidebar from "./AdminSidebar";
 import NotificationsPanel from "./NotificationsPanel";
 
+const useAuthGuard = () => {
+  const navigate = useNavigate();
+  const { user, isLoading, fetchUser, logout } = useAuthStore();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        if (!user) {
+          await fetchUser();
+        }
+      } catch (error) {
+        console.error("Auth check failed:", error);
+        logout();
+        navigate("/signin");
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  useEffect(() => {
+    if (!isLoading && user) {
+      if (user.roleRelation?.role !== "admin") {
+        navigate("/unauthorized");
+      }
+    }
+  }, [user, isLoading]);
+
+  return { isLoading, user };
+};
+
 const AdminLayout = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const navigate = useNavigate();
-  const { logout, user } = useAuthStore();
+  const { logout } = useAuthStore();
+  const { isLoading, user } = useAuthGuard();
 
   const handleLogout = () => {
     logout();
-    navigate("/signin");
+    navigate("/signin", { replace: true });
   };
 
-  useEffect(() => {
-    if (user) {
-      if (user.roleRelation.role !== "admin") {
-        navigate("/unauthorized");
-      }
-    }
-  }, [user]);
-
-  if (!user) {
+  if (isLoading) {
     return (
-      <div className=" w-full min-h-dvh flex items-center justify-center text-5xl text-myblue font-bold">
-        Loading...
+      <div className="w-full min-h-dvh flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-myblue" />
+          <p className="text-xl text-myblue font-medium">Loading...</p>
+        </div>
       </div>
     );
   }
