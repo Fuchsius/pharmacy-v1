@@ -32,8 +32,6 @@ const getAllProducts = async (req, res) => {
 
     const formattedProducts = products.map((product) => ({
       ...product,
-      imageUrl: product.productImages?.[0]?.imageUrl || null,
-      productImages: undefined,
     }));
 
     res.status(200).json(formattedProducts);
@@ -83,8 +81,6 @@ const getProductById = async (req, res) => {
 
     res.status(200).json({
       ...product,
-      imageUrl: product.productImages?.[0]?.imageUrl || null,
-      productImages: undefined,
     });
   } catch (error) {
     console.error("Get product error:", error);
