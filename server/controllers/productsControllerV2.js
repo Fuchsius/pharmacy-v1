@@ -14,6 +14,8 @@ const getAllProducts = async (req, res) => {
         price: true,
         discount: true,
         description: true,
+        imageUrl: true,
+        createdAt: true,
         productImages: {
           select: {
             imageUrl: true,
@@ -60,6 +62,8 @@ const getProductById = async (req, res) => {
         price: true,
         discount: true,
         description: true,
+        imageUrl: true,
+        createdAt: true,
         productImages: {
           select: {
             imageUrl: true,
@@ -104,7 +108,7 @@ const createProduct = async (req, res) => {
   if (!name || !brand || !categoryId || !stockCount || !price || !description) {
     return res.status(400).json({ error: "Required fields are missing" });
   }
-
+  console.log(imageUrl);
   try {
     // Create product
     const product = await prisma.product.create({
@@ -116,9 +120,7 @@ const createProduct = async (req, res) => {
         price: parseFloat(price),
         discount: discount ? parseFloat(discount) : null,
         description,
-        productImages: {
-          create: imageUrl ? [{ imageUrl }] : [],
-        },
+        imageUrl,
       },
       include: {
         productImages: true,
@@ -166,10 +168,7 @@ const updateProduct = async (req, res) => {
         price: parseFloat(price),
         discount: discount ? parseFloat(discount) : null,
         description,
-        productImages: {
-          deleteMany: {},
-          create: imageUrl ? [{ imageUrl }] : [],
-        },
+        imageUrl,
       },
       include: {
         productImages: true,
