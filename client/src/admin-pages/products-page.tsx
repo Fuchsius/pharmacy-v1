@@ -47,19 +47,22 @@ const ProductsManagement = () => {
   const handleDelete = async (id: number) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
+        console.log(id);
         // Get product details first to get image URL
-        const product = await apiClient.get<Product>(`/products-v2/${id}`);
+        const product: any = await apiClient.get(`/products-v2/${id}`);
 
+        console.log(product);
         // Delete the product
-        await apiClient.delete(`/products-v2/${id}`);
 
         // If product had an image, delete it too
-        if (product.productImages?.[0]?.imageUrl) {
-          const filename = product.productImages[0].imageUrl.split("/").pop();
+        if (product.imageUrl) {
+          // const filename = product.imageUrl;
           await apiClient.delete("/images/delete", {
-            imageUrl: filename,
+            imageUrl: product.imageUrl,
           });
         }
+
+        await apiClient.delete(`/products-v2/${id}`);
 
         await fetchProducts();
         toast.success("Product deleted successfully");
@@ -155,6 +158,9 @@ const ProductsManagement = () => {
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                ID
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                 Image
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
@@ -203,6 +209,7 @@ const ProductsManagement = () => {
                   ))
               : currentProducts.map((product) => (
                   <tr key={product.id}>
+                    <td className="px-6 py-4">{product.id}</td>
                     <td className="px-6 py-4">
                       <img
                         src={product?.imageUrl || ""}

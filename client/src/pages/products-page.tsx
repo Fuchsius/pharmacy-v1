@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 import { Product } from "@/types/product.types";
 
 const ProductsPage = () => {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -18,7 +18,7 @@ const ProductsPage = () => {
   const fetchProducts = async () => {
     setIsLoading(true);
     try {
-      const response = await apiClient.get<Product[]>("/products-v2");
+      const response = await apiClient.get<any[]>("/products-v2");
       setProducts(response);
     } catch (error: any) {
       toast.error(error.response?.data?.error || "Failed to fetch products");
@@ -79,7 +79,7 @@ const ProductsPage = () => {
                 filteredProducts.map((product) => (
                   <ProductCard
                     key={product.id}
-                    imageUrl={product.productImages?.[0]?.imageUrl || ""}
+                    imageUrl={product.imageUrl || ""}
                     name={product.name}
                     brand={product.brand}
                     description={product.description}
