@@ -11,7 +11,7 @@ interface Category {
 }
 
 type ProductFormProps = {
-  initialData?: Product;
+  initialData?: any;
   onSubmit: (data: ProductFormData) => void;
   onCancel: () => void;
   isSubmitting?: boolean;
@@ -23,7 +23,7 @@ const ProductForm = ({
   onCancel,
   isSubmitting = false,
 }: ProductFormProps) => {
-  const [formData, setFormData] = useState<ProductFormData>({
+  const [formData, setFormData] = useState<any>({
     name: initialData?.name || "",
     description: initialData?.description || "",
     price: initialData?.price || 0,
@@ -31,7 +31,8 @@ const ProductForm = ({
     categoryId: initialData?.categoryId || 1,
     brand: initialData?.brand || "",
     discount: initialData?.discount || 0,
-    imageUrl: initialData?.productImages?.[0]?.imageUrl || "",
+    imageUrl:
+      initialData?.imageUrl || initialData?.productImages?.[0]?.imageUrl || "",
   });
 
   const [categories, setCategories] = useState<Category[]>([]);
@@ -39,7 +40,7 @@ const ProductForm = ({
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewImage, setPreviewImage] = useState<string>(
-    initialData?.productImages?.[0]?.imageUrl || ""
+    initialData?.imageUrl || initialData?.productImages?.[0]?.imageUrl || ""
   );
 
   const [isUploadingImage, setIsUploadingImage] = useState(false);
@@ -77,7 +78,7 @@ const ProductForm = ({
       );
 
       setPreviewImage(response.imageUrl);
-      setFormData((prev) => ({ ...prev, imageUrl: response.imageUrl }));
+      setFormData((prev: any) => ({ ...prev, imageUrl: response.imageUrl }));
       toast.success("Image uploaded successfully");
     } catch (error: any) {
       toast.error(error.response?.data?.error || "Failed to upload image");
@@ -100,7 +101,7 @@ const ProductForm = ({
       });
 
       setPreviewImage("");
-      setFormData((prev) => ({ ...prev, imageUrl: "" }));
+      setFormData((prev: any) => ({ ...prev, imageUrl: "" }));
       if (fileInputRef.current) fileInputRef.current.value = "";
       toast.success("Image deleted successfully");
     } catch (error: any) {

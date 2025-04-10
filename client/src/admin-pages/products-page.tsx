@@ -13,7 +13,7 @@ const ProductsManagement = () => {
   const [products, setProducts] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [editingProduct, setEditingProduct] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const itemsPerPage = 10;
 
@@ -72,8 +72,12 @@ const ProductsManagement = () => {
     }
   };
 
-  const handleEdit = (product: Product) => {
-    setEditingProduct(product);
+  const handleEdit = (product: any) => {
+    const formattedProduct = {
+      ...product,
+      imageUrl: product.imageUrl || product.productImages?.[0]?.imageUrl,
+    };
+    setEditingProduct(formattedProduct);
     setIsModalOpen(true);
   };
 
