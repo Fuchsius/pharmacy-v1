@@ -10,10 +10,11 @@ import ProductForm from "@/components/admin/ProductForm";
 import apiClient from "@/services/api";
 
 const ProductsManagement = () => {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const itemsPerPage = 10;
 
   const initialFormData: ProductFormData = {
@@ -104,11 +105,14 @@ const ProductsManagement = () => {
   };
 
   const fetchProducts = async () => {
+    setIsLoading(true);
     try {
-      const response = await apiClient.get<Product[]>("/products");
+      const response = await apiClient.get<any[]>("/products-v2");
       setProducts(response);
     } catch (error: any) {
       toast.error(error.response?.data?.error || "Failed to fetch products");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -171,75 +175,100 @@ const ProductsManagement = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {currentProducts.map((product) => (
-              <tr key={product.id}>
-                <td className="px-6 py-4">
-                  <img
-                    src={
-                      product.productImages?.[0]?.imageUrl ||
-                      "/placeholder-image.jpg"
-                    }
-                    alt={product.name}
-                    className="h-12 w-12 object-cover rounded"
-                  />
-                </td>
-                <td className="px-6 py-4">{product.name}</td>
-                <td className="px-6 py-4">{product.brand}</td>
-                <td className="px-6 py-4">
-                  LKR {product.price.toLocaleString()}
-                </td>
-                <td className="px-6 py-4">
-                  <span
-                    className={`px-2 py-1 rounded-full text-nowrap text-xs ${
-                      0 < product.stockCount
-                        ? "bg-green-100 text-green-800"
-                        : "bg-red-100 text-red-800"
-                    }`}
-                  >
-                    {0 < product.stockCount
-                      ? product.stockCount
-                      : "Out of Stock"}
-                  </span>
-                </td>
-                <td className="px-6 py-4 flex h-full my-auto gap-4">
-                  <button
-                    onClick={() => handleEdit(product)}
-                    className="text-blue-600 hover:text-blue-900 cursor-pointer"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(product.id)}
-                    className="text-red-600 hover:text-red-900 cursor-pointer"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {isLoading
+              ? // Loading skeleton rows
+                Array(5)
+                  .fill(0)
+                  .map((_, index) => (
+                    <tr key={`skeleton-${index}`}>
+                      <td className="px-6 py-4">
+                        <div className="h-12 w-12 bg-gray-200 rounded animate-pulse"></div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="h-4 w-32 bg-gray-200 rounded animate-pulse"></div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="h-4 w-24 bg-gray-200 rounded animate-pulse"></div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="h-4 w-20 bg-gray-200 rounded animate-pulse"></div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="h-4 w-16 bg-gray-200 rounded animate-pulse"></div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="h-4 w-24 bg-gray-200 rounded animate-pulse"></div>
+                      </td>
+                    </tr>
+                  ))
+              : currentProducts.map((product) => (
+                  <tr key={product.id}>
+                    <td className="px-6 py-4">
+                      <img
+                        src={product?.imageUrl || ""}
+                        alt={product.name}
+                        className="h-12 w-12 object-cover rounded"
+                      />
+                    </td>
+                    <td className="px-6 py-4">{product.name}</td>
+                    <td className="px-6 py-4">{product.brand}</td>
+                    <td className="px-6 py-4">
+                      LKR {product.price.toLocaleString()}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={`px-2 py-1 rounded-full text-nowrap text-xs ${
+                          0 < product.stockCount
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {0 < product.stockCount
+                          ? product.stockCount
+                          : "Out of Stock"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 flex h-full my-auto gap-4">
+                      <button
+                        onClick={() => handleEdit(product)}
+                        className="text-blue-600 hover:text-blue-900 cursor-pointer"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(product.id)}
+                        className="text-red-600 hover:text-red-900 cursor-pointer"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
           </tbody>
         </table>
       </div>
 
-      {/* Pagination */}
-      <div className="flex justify-center mt-6">
-        <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-            <button
-              key={page}
-              onClick={() => handlePageChange(page)}
-              className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium
-                ${
-                  currentPage === page
-                    ? "z-10 bg-blue-50 border-blue-500 text-blue-600"
-                    : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
-                }`}
-            >
-              {page}
-            </button>
-          ))}
-        </nav>
-      </div>
+      {/* Pagination - Only show when not loading */}
+      {!isLoading && (
+        <div className="flex justify-center mt-6">
+          <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <button
+                key={page}
+                onClick={() => handlePageChange(page)}
+                className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium
+                  ${
+                    currentPage === page
+                      ? "z-10 bg-blue-50 border-blue-500 text-blue-600"
+                      : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
+                  }`}
+              >
+                {page}
+              </button>
+            ))}
+          </nav>
+        </div>
+      )}
 
       {/* Add/Edit Modal */}
       {isModalOpen && (
