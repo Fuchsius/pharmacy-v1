@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router";
 
 type ProductCardProps = {
+  id: string;
   imageUrl: string;
   name: string;
   brand: string;
@@ -14,6 +15,7 @@ type ProductCardProps = {
 };
 
 const ProductCard = ({
+  id,
   imageUrl,
   name,
   brand,
@@ -25,7 +27,7 @@ const ProductCard = ({
   badges = [],
 }: ProductCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(0);
 
   // Calculate discounted price
   const discountedPrice = discount > 0 ? price * (1 - discount / 100) : price;
@@ -169,7 +171,7 @@ const ProductCard = ({
         </div>
 
         {/* View Product Button */}
-        <Link to={`/products/${name.toLowerCase().replace(/\s+/g, "-")}`}>
+        <Link to={`/products/${id}`}>
           <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-md font-medium transition-colors mb-2">
             VIEW PRODUCT
           </button>

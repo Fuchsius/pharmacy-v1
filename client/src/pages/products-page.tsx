@@ -3,7 +3,7 @@ import ProductCard from "@/components/ProductCard";
 import { useEffect, useState } from "react";
 import apiClient from "@/services/api";
 import toast from "react-hot-toast";
-import { Product } from "@/types/product.types";
+// import { Product } from "@/types/product.types";
 
 const ProductsPage = () => {
   const [products, setProducts] = useState<any[]>([]);
@@ -78,6 +78,7 @@ const ProductsPage = () => {
               {filteredProducts.length > 0 ? (
                 filteredProducts.map((product) => (
                   <ProductCard
+                    id={product.id}
                     key={product.id}
                     imageUrl={product.imageUrl || ""}
                     name={product.name}

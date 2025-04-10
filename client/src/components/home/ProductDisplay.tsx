@@ -1,26 +1,34 @@
 // src/components/home/ProductDisplay.tsx
-import { useGSAP } from "@gsap/react";
+// import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Link } from "react-router";
 import ProductCard from "../ProductCard";
-import { PRODUCT_DATA } from "@/data/productdata.data";
+// import { PRODUCT_DATA } from "@/data/productdata.data";
+import { useEffect, useState } from "react";
+import apiClient from "@/services/api";
+import toast from "react-hot-toast";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const ProductDisplay = () => {
-  useGSAP(() => {
-    // gsap.from(".product-card", {
-    //   opacity: 0,
-    //   y: 50,
-    //   stagger: 0.1,
-    //   duration: 0.8,
-    //   ease: "power2.out",
-    //   scrollTrigger: {
-    //     trigger: ".products-section",
-    //     start: "top 80%",
-    //   },
-    // });
+  const [isLoading, setIsLoading] = useState(false);
+  const [products, setProducts] = useState<any[]>([]);
+
+  const fetchProducts = async () => {
+    setIsLoading(true);
+    try {
+      const response = await apiClient.get<any[]>("/products-v2");
+      setProducts(response);
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || "Failed to fetch products");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
   }, []);
 
   return (
@@ -34,20 +42,49 @@ const ProductDisplay = () => {
           meet your needs.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {PRODUCT_DATA.map((product, index) => (
-            <ProductCard
-              key={index}
-              imageUrl={product.imageUrl}
-              name={product.name}
-              brand={product.brand}
-              description={product.description}
-              price={product.price}
-              currency={product.currency}
-              discount={product.discount}
-              inStock={0 < product.stockCount}
-              badges={product.badges}
-            />
-          ))}
+          {isLoading ? (
+            // Loading skeletons
+            Array(4)
+              .fill(0)
+              .map((_, index) => (
+                <div
+                  key={index}
+                  className="bg-white rounded-md shadow-md p-4 space-y-4 animate-pulse"
+                >
+                  <div className="h-48 bg-gray-200 rounded-lg"></div>
+                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                  <div className="h-3 bg-gray-200 rounded w-full"></div>
+                  <div className="h-8 bg-gray-200 rounded"></div>
+                  <div className="space-y-2">
+                    <div className="h-10 bg-gray-200 rounded"></div>
+                    <div className="h-10 bg-gray-200 rounded"></div>
+                  </div>
+                </div>
+              ))
+          ) : products.length === 0 ? (
+            <div className="col-span-full text-center py-8 text-gray-500">
+              No products found
+            </div>
+          ) : (
+            products
+              .slice(0, 4)
+              .map((product, index) => (
+                <ProductCard
+                  id={product.id}
+                  key={index}
+                  imageUrl={product.imageUrl}
+                  name={product.name}
+                  brand={product.brand}
+                  description={product.description}
+                  price={product.price}
+                  currency={product.currency}
+                  discount={product.discount}
+                  inStock={0 < product.stockCount}
+                  badges={product.badges}
+                />
+              ))
+          )}
         </div>
 
         <div className="text-center mt-10">

@@ -1,3 +1,4 @@
+import { useAuthStore } from "@/store/authStore";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
@@ -16,11 +17,13 @@ interface SystemSettings {
 }
 
 const Setting = () => {
+  const { user } = useAuthStore();
+
   const [profile, setProfile] = useState<AdminProfile>({
-    firstName: "Admin",
-    lastName: "User",
-    email: "admin@pnm.com",
-    phone: "077 110 4103",
+    firstName: user?.firstName || "",
+    lastName: user?.lastName || "",
+    email: user?.email || "",
+    phone: user?.phone || "",
   });
 
   const [settings, setSettings] = useState<SystemSettings>({
@@ -215,7 +218,7 @@ const Setting = () => {
       </div>
 
       {/* System Settings */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
+      {/* <div className="bg-white rounded-lg shadow-sm p-6">
         <h2 className="text-lg font-semibold mb-6">System Settings</h2>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
@@ -287,7 +290,7 @@ const Setting = () => {
             </select>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
