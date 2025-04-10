@@ -332,7 +332,11 @@ const searchProducts = async (req, res) => {
 
 const addProductImage = async (req, res) => {
   const productId = req.params.id;
-  const imageUrl = req.file.path;
+
+  const imageUrl = req.file
+    ? `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`
+    : null;
+  // const imageUrl = req.file.path ;
 
   if (!productId) {
     return res.status(400).json({ error: "Product ID is required." });

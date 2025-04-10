@@ -57,8 +57,8 @@ const apiClient = {
     return response.data;
   },
 
-  delete: async <T>(url: string) => {
-    const response = await api.delete<T>(url);
+  delete: async <T>(url: string, data?: any) => {
+    const response = await api.delete<T>(url, { data });
     return response.data;
   },
 

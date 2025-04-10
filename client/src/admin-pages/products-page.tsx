@@ -1,12 +1,16 @@
-import { useState, useRef } from "react";
+import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
-import { Product, ProductFormData } from "@/types/product.types";
+import {
+  Product,
+  ProductFormData,
+  CreateProductDTO,
+} from "@/types/product.types";
 import { PRODUCT_DATA } from "@/data/productdata.data";
 import ProductForm from "@/components/admin/ProductForm";
 import apiClient from "@/services/api";
 
 const ProductsManagement = () => {
-  const [products, setProducts] = useState<Product[]>(PRODUCT_DATA);
+  const [products, setProducts] = useState<Product[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -18,38 +22,15 @@ const ProductsManagement = () => {
     description: "",
     imageUrl: "",
     price: 0,
-    currency: "LKR",
     discount: 0,
     stockCount: 0,
-    badges: [],
     categoryId: 0,
   };
 
-  const [formData, setFormData] = useState<ProductFormData>(initialFormData);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [previewImage, setPreviewImage] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isImageUploadStep, setIsImageUploadStep] = useState(false);
-  const [currentProductId, setCurrentProductId] = useState<number | null>(null);
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewImage(reader.result as string);
-        setFormData((prev) => ({ ...prev, imageUrl: reader.result as string }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   const resetForm = () => {
-    setFormData(initialFormData);
-    setPreviewImage("");
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+    setEditingProduct(null);
   };
 
   // Pagination calculations
@@ -71,87 +52,51 @@ const ProductsManagement = () => {
 
   const handleEdit = (product: Product) => {
     setEditingProduct(product);
-    setFormData({
-      name: product.name,
-      brand: product.brand,
-      description: product.description,
-      imageUrl: product.imageUrl,
-      price: product.price,
-      currency: product.currency,
-      discount: product.discount,
-      stockCount: product.stockCount,
-      badges: product.badges,
-      categoryId: product.categoryId,
-    });
     setIsModalOpen(true);
   };
 
-  const handleSubmit = async (
-    formData: ProductFormData,
-    isImageStep = false
-  ) => {
+  const handleSubmit = async (formData: ProductFormData) => {
     setIsSubmitting(true);
     try {
+      const productData: any = {
+        name: formData.name,
+        description: formData.description,
+        price: Number(formData.price),
+        stockCount: Number(formData.stockCount),
+        categoryId: Number(formData.categoryId),
+        brand: formData.brand,
+        discount: Number(formData.discount) || undefined,
+        imageUrl: formData.imageUrl || undefined,
+      };
+
       if (editingProduct) {
-        setProducts(
-          products.map((p) =>
-            p.id === editingProduct.id ? { ...p, ...formData } : p
-          )
-        );
+        await apiClient.put(`/products-v2/${editingProduct.id}`, productData);
         toast.success("Product updated successfully");
-      } else if (isImageStep && currentProductId) {
-        const base64Data = formData.imageUrl?.split(",")[1];
-        if (!base64Data) return;
-
-        const byteCharacters = atob(base64Data);
-        const byteNumbers = new Array(byteCharacters.length);
-
-        for (let i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-        }
-
-        const byteArray = new Uint8Array(byteNumbers);
-        const imageFile = new File([byteArray], "product-image.jpg", {
-          type: "image/jpeg",
-        });
-
-        const formDataObj = new FormData();
-        formDataObj.append("image", imageFile);
-
-        await apiClient.postFormData(
-          `/products/image/${currentProductId}`,
-          formDataObj
-        );
-
-        toast.success("Product created successfully");
-        setIsModalOpen(false);
-        setIsImageUploadStep(false);
-        setCurrentProductId(null);
       } else {
-        const productData = {
-          name: formData.name,
-          description: formData.description,
-          price: Number(formData.price),
-          stockCount: Number(formData.stockCount),
-          categoryId: Number(formData.categoryId),
-          brand: formData.brand,
-          discount: Number(formData.discount) || 0,
-        };
-
-        const newProduct = await apiClient.post<Product>(
-          "/products",
-          productData
-        );
-        setCurrentProductId(newProduct.id);
-        setIsImageUploadStep(true);
-        toast.success("Product details saved. Please add an image.");
+        await apiClient.post("/products-v2", productData);
+        toast.success("Product created successfully");
       }
+      setIsModalOpen(false);
+      fetchProducts();
     } catch (error: any) {
       toast.error(error.response?.data?.error || "Failed to process request");
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  const fetchProducts = async () => {
+    try {
+      const response = await apiClient.get<Product[]>("/products");
+      setProducts(response);
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || "Failed to fetch products");
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
   return (
     <div className=" bg-gray-50">
@@ -212,7 +157,10 @@ const ProductsManagement = () => {
               <tr key={product.id}>
                 <td className="px-6 py-4">
                   <img
-                    src={product.imageUrl}
+                    src={
+                      product.productImages?.[0]?.imageUrl ||
+                      "/placeholder-image.jpg"
+                    }
                     alt={product.name}
                     className="h-12 w-12 object-cover rounded"
                   />
@@ -220,7 +168,7 @@ const ProductsManagement = () => {
                 <td className="px-6 py-4">{product.name}</td>
                 <td className="px-6 py-4">{product.brand}</td>
                 <td className="px-6 py-4">
-                  {product.currency} {product.price.toLocaleString()}
+                  LKR {product.price.toLocaleString()}
                 </td>
                 <td className="px-6 py-4">
                   <span
@@ -284,14 +232,16 @@ const ProductsManagement = () => {
                 {editingProduct ? "Edit Product" : "Add New Product"}
               </h2>
               <button
-                onClick={() => setIsModalOpen(false)}
+                onClick={() => {
+                  setIsModalOpen(false);
+                }}
                 className="text-gray-500 hover:text-gray-700"
               >
                 <svg
                   className="w-6 h-6"
                   fill="none"
                   stroke="currentColor"
-                  viewBox="0 0 24 24"
+                  viewBox="0 24 24"
                 >
                   <path
                     strokeLinecap="round"
@@ -306,7 +256,9 @@ const ProductsManagement = () => {
             <ProductForm
               initialData={editingProduct || undefined}
               onSubmit={handleSubmit}
-              onCancel={() => setIsModalOpen(false)}
+              onCancel={() => {
+                setIsModalOpen(false);
+              }}
               isSubmitting={isSubmitting}
             />
           </div>

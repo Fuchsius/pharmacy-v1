@@ -1,18 +1,41 @@
 export type Product = {
   id: number;
-  imageUrl: string;
   name: string;
-  brand: string;
   description: string;
   price: number;
-  currency: string;
-  discount: number;
-  rating: number;
   stockCount: number;
   categoryId: number;
-  badges: string[];
+  brand: string;
+  discount?: number;
+  productImages: Array<{
+    id: number;
+    imageUrl: string;
+  }>;
+  category: {
+    id: number;
+    name: string;
+  };
 };
 
-export type ProductFormData = Omit<Product, "id" | "rating"> & {
+// DTO for creating a product
+export type CreateProductDTO = {
+  name: string;
+  description: string;
+  price: number;
+  stockCount: number;
+  categoryId: number;
+  brand: string;
+  discount?: number;
+};
+
+// Form data including image
+export type ProductFormData = {
+  name: string;
+  description: string;
+  price: number;
+  stockCount: number;
+  categoryId: number;
+  brand: string;
+  discount?: number;
   imageUrl?: string;
 };

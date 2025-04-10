@@ -22,6 +22,8 @@ const categoriesRouter = require("./routes/categoriesRouter");
 const productsRouter = require("./routes/productsRouter");
 const contactRouter = require("./routes/contactRouter");
 const authRouter = require("./routes/authRouter");
+const imageRouter = require("./routes/imageRouter");
+const productsRouterV2 = require("./routes/productsRouterV2");
 
 // Routes - Middleware
 app.use("/auth", authRouter);
@@ -31,6 +33,8 @@ app.use("/address", addressRouter);
 app.use("/categories", categoriesRouter);
 app.use("/products", productsRouter);
 app.use("/contact", contactRouter);
+app.use("/images", imageRouter);
+app.use("/products-v2", productsRouterV2);
 
 // Example health check route
 app.get("/", (req, res) => {
